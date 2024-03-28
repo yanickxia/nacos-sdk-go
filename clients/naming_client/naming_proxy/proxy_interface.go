@@ -22,7 +22,7 @@ import (
 
 // INamingProxy ...
 type INamingProxy interface {
-	UpdateInstance(serviceName string, groupName string, instance model.Instance) (bool, error)
+	//UpdateInstance(serviceName string, groupName string, instance model.Instance) (bool, error)
 
 	RegisterInstance(serviceName string, groupName string, instance model.Instance) (bool, error)
 

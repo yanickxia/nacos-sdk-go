@@ -113,7 +113,7 @@ func (proxy *NamingHttpProxy) RegisterInstance(serviceName string, groupName str
 	params["healthy"] = strconv.FormatBool(instance.Healthy)
 	params["metadata"] = util.ToJsonString(instance.Metadata)
 	params["ephemeral"] = strconv.FormatBool(instance.Ephemeral)
-	_, err := proxy.nacosServer.ReqApi(constant.SERVICE_PATH, params, http.MethodPost, proxy.clientConfig)
+	_, err := proxy.nacosServer.ReqApi(constant.SERVICE_PATH, params, http.MethodPut, proxy.clientConfig)
 	if err != nil {
 		return false, err
 	}
