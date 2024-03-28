@@ -18,6 +18,7 @@ package naming_client
 
 import (
 	"context"
+
 	"github.com/nacos-group/nacos-sdk-go/v2/inner/uuid"
 
 	"github.com/nacos-group/nacos-sdk-go/v2/clients/naming_client/naming_cache"
@@ -74,12 +75,7 @@ func NewNamingProxyDelegate(ctx context.Context, clientCfg constant.ClientConfig
 }
 
 func (proxy *NamingProxyDelegate) getExecuteClientProxy(instance model.Instance) (namingProxy naming_proxy.INamingProxy) {
-	if instance.Ephemeral {
-		namingProxy = proxy.grpcClientProxy
-	} else {
-		namingProxy = proxy.httpClientProxy
-	}
-	return namingProxy
+	return proxy.httpClientProxy
 }
 
 func (proxy *NamingProxyDelegate) RegisterInstance(serviceName string, groupName string, instance model.Instance) (bool, error) {
