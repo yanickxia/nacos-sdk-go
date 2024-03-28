@@ -181,7 +181,7 @@ func (sc *NamingClient) UpdateInstance(param vo.UpdateInstanceParam) (bool, erro
 		Ephemeral:   param.Ephemeral,
 	}
 
-	return sc.serviceProxy.RegisterInstance(param.ServiceName, param.GroupName, instance)
+	return sc.serviceProxy.UpdateInstance(param.ServiceName, param.GroupName, instance)
 
 }
 

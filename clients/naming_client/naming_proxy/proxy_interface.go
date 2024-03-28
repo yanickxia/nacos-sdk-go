@@ -22,6 +22,8 @@ import (
 
 // INamingProxy ...
 type INamingProxy interface {
+	UpdateInstance(serviceName string, groupName string, instance model.Instance) (bool, error)
+
 	RegisterInstance(serviceName string, groupName string, instance model.Instance) (bool, error)
 
 	BatchRegisterInstance(serviceName string, groupName string, instances []model.Instance) (bool, error)

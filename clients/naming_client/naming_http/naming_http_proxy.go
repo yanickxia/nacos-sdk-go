@@ -58,6 +58,43 @@ func NewNamingHttpProxy(ctx context.Context, clientCfg constant.ClientConfig, na
 	return &srvProxy, nil
 }
 
+func (proxy *NamingHttpProxy) UpdateInstance(serviceName string, groupName string, instance model.Instance) (bool, error) {
+	logger.Infof("register instance namespaceId:<%s>,serviceName:<%s> with instance:<%s>",
+		proxy.clientConfig.NamespaceId, serviceName, util.ToJsonString(instance))
+	serviceName = util.GetGroupName(serviceName, groupName)
+	params := map[string]string{}
+	params["namespaceId"] = proxy.clientConfig.NamespaceId
+	params["serviceName"] = serviceName
+	params["groupName"] = groupName
+	params["app"] = proxy.clientConfig.AppName
+	params["clusterName"] = instance.ClusterName
+	params["ip"] = instance.Ip
+	params["port"] = strconv.Itoa(int(instance.Port))
+	params["weight"] = strconv.FormatFloat(instance.Weight, 'f', -1, 64)
+	params["enable"] = strconv.FormatBool(instance.Enable)
+	params["healthy"] = strconv.FormatBool(instance.Healthy)
+	params["metadata"] = util.ToJsonString(instance.Metadata)
+	params["ephemeral"] = strconv.FormatBool(instance.Ephemeral)
+	_, err := proxy.nacosServer.ReqApi(constant.SERVICE_PATH, params, http.MethodPut, proxy.clientConfig)
+	if err != nil {
+		return false, err
+	}
+	if instance.Ephemeral {
+		beatInfo := &model.BeatInfo{
+			Ip:          instance.Ip,
+			Port:        instance.Port,
+			Metadata:    instance.Metadata,
+			ServiceName: util.GetGroupName(serviceName, groupName),
+			Cluster:     instance.ClusterName,
+			Weight:      instance.Weight,
+			Period:      util.GetDurationWithDefault(instance.Metadata, constant.HEART_BEAT_INTERVAL, time.Second*5),
+			State:       model.StateRunning,
+		}
+		proxy.beatReactor.AddBeatInfo(util.GetGroupName(serviceName, groupName), beatInfo)
+	}
+	return true, nil
+}
+
 // RegisterInstance ...
 func (proxy *NamingHttpProxy) RegisterInstance(serviceName string, groupName string, instance model.Instance) (bool, error) {
 	logger.Infof("register instance namespaceId:<%s>,serviceName:<%s> with instance:<%s>",
